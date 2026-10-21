@@ -1,0 +1,17 @@
+# Everything runs in this container: nothing gets installed on your machine.
+#   docker compose run --rm dev                      # install (first run only) and run the tests
+#   docker compose run --rm dev npm run typecheck    # any other command
+# Remove it all afterwards:
+#   docker compose down -v --rmi all
+name: prop-engine
+services:
+  dev:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    entrypoint: ["sh", "-c", "[ -x node_modules/.bin/vitest ] || npm ci --ignore-scripts --no-audit --no-fund; exec \"$$@\"", "--"]
+    command: ["npm", "test"]
+volumes:
+  node_modules:
